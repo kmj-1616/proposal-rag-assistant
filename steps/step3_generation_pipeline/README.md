@@ -1,16 +1,41 @@
 # step3_generation_pipeline
 
-## Goal
+## 목표
 
-- Generate proposal draft sections from:
-  - structured RFP requirements
-  - retrieved reference chunks
+- RFP 구조화 결과와 유사 제안서 검색 결과를 결합해 섹션별 제안서 초안을 생성한다.
 
-## Core Requirements
+## 핵심 구현 범위
 
-- Section-by-section generation (not full one-shot generation)
-- Prompt version tracking and quality notes
+- 목차 자동 구성 로직
+  - RFP에 목차 지정이 있으면 우선 반영
+  - 목차 지정이 없으면 기본 회사 공통 목차 사용
+  - 평가 배점이 높은 항목에 더 많은 분량/우선순위 할당
+- 섹션별 생성 파이프라인
+  - `RFP 분석 -> 검색 컨텍스트 주입 -> 섹션 생성` 흐름
+  - 전체 원샷 생성이 아닌 섹션 단위 생성
+- 프롬프트 튜닝
+  - 동일 입력으로 프롬프트 버전 3회 이상 비교
+  - 품질 차이 및 선택 근거 기록
 
-## Status
+## 품질 목표
 
-- Design target documented. Implementation pending.
+- 생성 내용이 RFP 요구사항에 정확히 대응한다.
+- 기존 제안서 톤/스타일이 유지된다.
+- 섹션 간 일관성(용어/구성/분량)이 유지된다.
+
+## 산출물
+
+- 목차 생성 결과(중간 구조 데이터)
+- 섹션별 생성 텍스트
+- 프롬프트 버전 비교 기록
+
+## 완료 기준
+
+- 목차 구성부터 섹션별 생성까지 End-to-End로 동작한다.
+- 요구사항 반영 여부를 확인할 수 있는 검토 기준이 문서화된다.
+- 프롬프트 비교 결과가 재현 가능한 형태로 정리된다.
+
+## 현재 상태
+
+- 설계 목표 문서화 완료
+- 실제 생성 파이프라인 구현은 진행 예정

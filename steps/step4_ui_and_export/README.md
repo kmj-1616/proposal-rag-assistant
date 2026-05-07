@@ -1,18 +1,37 @@
 # step4_ui_and_export
 
-## Goal
+## 목표
 
-- Provide a UI flow:
-  - upload RFP
-  - review parsed requirements
-  - generate draft
-  - download document
+- 사용자가 RFP 업로드부터 출력까지 한 화면 흐름에서 처리할 수 있는 UI를 제공한다.
+- 생성 결과를 Word/PPT 파일로 내보낼 수 있게 한다.
 
-## Minimum Output
+## UI 흐름 요구사항
 
-- Word export (`.docx`) support
-- End-to-end UI flow verified with local test RFP
+1. RFP 파일 업로드
+2. RFP 분석 결과 확인 및 수정
+3. 제안서 생성 실행
+4. 섹션별 생성 결과 확인
+5. 파일 다운로드
 
-## Status
+## 출력 기능 요구사항
 
-- Placeholder step created. Implementation pending.
+- 최소 목표: Word(`.docx`) 출력 완성
+- 확장 목표: PPT(`.pptx`) 출력 지원
+- 가능하면 기존 템플릿 반영 가능한 구조 설계
+
+## 산출물
+
+- UI 화면 흐름 구현 코드
+- 문서 출력 모듈(Word 필수, PPT 선택)
+- End-to-End 실행 검증 결과
+
+## 완료 기준
+
+- `업로드 -> 분석/수정 -> 생성 -> 다운로드` 전체 흐름이 동작한다.
+- 출력 파일의 섹션 구조/본문 내용이 정상 생성된다.
+- 오류 발생 시 사용자가 복구 가능한 메시지를 확인할 수 있다.
+
+## 현재 상태
+
+- step4 요구사항 문서화 완료
+- UI 및 출력 모듈 구현은 진행 예정

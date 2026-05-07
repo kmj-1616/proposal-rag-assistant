@@ -1,15 +1,43 @@
 # step2_retrieval_and_rfp_parse
 
-## Goal
+## 목표
 
-- Build retrieval index from step1 chunks.
-- Parse uploaded RFP into structured JSON.
+- step1 청크를 기반으로 유사 제안서 검색 인덱스를 구성한다.
+- 업로드된 RFP를 LLM 기반 문맥 이해 방식으로 분석해 구조화 JSON으로 변환한다.
 
-## Expected Outputs
+## 핵심 구현 범위
 
-- Retrieval index metadata (local only)
-- `rfp_requirements.json` schema-compliant output (sanitized samples only in repo)
+- 벡터 인덱싱
+  - 청크 임베딩 생성 및 저장
+  - 자연어 질의 기반 검색 스모크 테스트
+- RFP 분석 모듈
+  - RFP 텍스트에서 요구사항 자동 추출/구조화
+  - 파싱 결과를 스키마 기반 JSON으로 출력
 
-## Status
+## RFP 추출 필수 항목
 
-- Scaffold only. Implementation will be added with incremental commits.
+- 프로젝트명 및 발주 기관
+- 예산 범위
+- 사업 목적 및 배경
+- 평가 기준 및 배점
+- 핵심 요구사항(기능, 기술, 인력)
+- 제안서 작성 지침(페이지 제한, 목차 지정)
+- 납기 및 일정 조건
+- 필수 포함 사항 및 제약 조건
+
+## 산출물
+
+- 로컬 검색 인덱스 메타데이터(로컬 전용)
+- `rfp_requirements.json` (스키마 준수)
+- 검색 품질 스모크 테스트 결과 노트
+
+## 완료 기준
+
+- 자연어 질의 시 관련 청크 검색이 동작한다.
+- RFP 업로드 후 구조화 JSON이 안정적으로 생성된다.
+- 필수 추출 항목 누락 여부를 검증할 수 있다.
+
+## 현재 상태
+
+- 파서/검색 스모크 테스트 골격 구현 완료
+- 상세 추출 규칙 및 품질 검증 로직은 진행 예정

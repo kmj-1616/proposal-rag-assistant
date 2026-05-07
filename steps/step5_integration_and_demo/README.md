@@ -1,16 +1,37 @@
 # step5_integration_and_demo
 
-## Goal
+## 목표
 
-- Final integration test
-- Demo scenario preparation
-- Presentation package assembly
+- step1~step4 결과를 통합해 전체 파이프라인을 안정화한다.
+- 발표/데모 시나리오를 완성하고 검증한다.
 
-## Exit Criteria
+## 핵심 점검 항목
 
-- End-to-end flow reproducible
-- Demo script and known limitations documented
+- 시스템 전체 흐름
+  - RFP 분석부터 제안서 출력까지 End-to-End 재현 가능 여부
+- 라이브 데모 시나리오
+  - 실제 RFP 샘플로 제안서 생성 시연 가능 여부
+- 품질 검증
+  - RFP 분석 정확도(추출 요구사항 정합성)
+  - 기존 제안서 스타일 반영 여부
+  - 기존 제안서 vs 생성 결과 비교 근거
+- 정리 항목
+  - 한계점 및 개선 아이디어 문서화
+  - 발표 자료/설명 스크립트 정리
 
-## Status
+## 산출물
 
-- Placeholder step created. Implementation pending.
+- 통합 검증 체크리스트 및 결과
+- 데모 실행 런북
+- 발표용 요약 자료(구조/품질/한계/개선)
+
+## 완료 기준
+
+- 전체 흐름이 반복 실행 가능한 상태다.
+- 데모 시나리오가 실제 데이터로 재현 가능하다.
+- 비교/한계/개선 포인트가 문서로 정리되어 있다.
+
+## 현재 상태
+
+- step5 요구사항 문서화 완료
+- 통합 검증 및 데모 패키지 구성은 진행 예정
