@@ -65,19 +65,85 @@ python "steps/step2_retrieval_and_rfp_parse/run_validation_cases.py"
 - RFP 업로드 후 구조화 JSON이 안정적으로 생성된다.
 - 필수 추출 항목 누락 여부를 검증할 수 있다.
 
+## API 서버 실행 (feature/step2-api-skeleton)
+
+### 사전 준비
+
+```bash
+pip install -r requirements.txt
+```
+
+### 서버 기동
+
+```bash
+# 프로젝트 루트에서 실행
+uvicorn app.main:app --reload --port 8000
+```
+
+### OpenAPI 문서 확인
+
+브라우저에서 `http://localhost:8000/docs` 접속
+
+### 샘플 요청
+
+**POST /api/v1/rfp/analyze** (텍스트 입력)
+
+```bash
+curl -X POST http://localhost:8000/api/v1/rfp/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rfp_text": "프로젝트명: AI 기반 제안서 자동화 시스템\n발주기관: 한국정보화진흥원\n예산: 3억원\n사업 목적: RFP 자동 분석 및 제안서 초안 생성\n평가기준: 기술평가 80점, 가격평가 20점"
+  }'
+```
+
+**POST /api/v1/rfp/analyze** (파일경로 입력)
+
+```bash
+curl -X POST http://localhost:8000/api/v1/rfp/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"rfp_file_path": "/path/to/local/rfp.txt"}'
+```
+
+**POST /api/v1/proposals/search**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/proposals/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "AI 기반 데이터 분석 플랫폼", "top_k": 5}'
+```
+
+### 샘플 응답 (/rfp/analyze)
+
+```json
+{
+  "rfp_requirements": {
+    "project_name": "AI 기반 제안서 자동화 시스템",
+    "organization": "한국정보화진흥원",
+    "budget_range": "3억원",
+    "purpose_background": "RFP 자동 분석 및 제안서 초안 생성",
+    "evaluation_criteria": ["평가기준: 기술평가 80점, 가격평가 20점"],
+    "core_requirements": [],
+    "authoring_guidelines": [],
+    "schedule_constraints": [],
+    "must_have_constraints": []
+  },
+  "missing_fields": ["core_requirements", "authoring_guidelines", "schedule_constraints", "must_have_constraints"]
+}
+```
+
 ## 현재 상태
 
-- 파서 규칙 고도화 및 누락 필드 출력 지원 완료
+- 파서/검색 스모크 테스트 골격 구현 완료
+- 파서 규칙 고도화 및 누락 필드 출력 지원 완료 (feature/step2-rfp-parser-quality)
 - 스키마 검증 스크립트/테스트 케이스(정상/누락/비정형) 추가 완료
-- 검색 품질 고도화(벡터 임베딩 실제 적용)는 다음 구현 단계
+- FastAPI API 골격 구현 완료 (feature/step2-api-skeleton)
+  - `POST /api/v1/rfp/analyze`: 텍스트/파일경로 입력 지원
+  - `POST /api/v1/proposals/search`: 키워드 기반 스텁 검색
+  - `GET /api/v1/health`: 헬스체크
 
-## 현재 한계
+## 한계 및 다음 브랜치 연결점
 
 - 파서가 규칙 기반(정규식 + 키워드)이라 문서 스타일 편차가 큰 경우 누락 가능
-- 스키마 검증은 구조/타입 검증 중심이며 의미적 정확도 평가는 별도 필요
-- 검색 스모크 테스트는 현재 키워드 스코어 방식이며, 임베딩 검색은 후속 작업
-
-## 다음 브랜치 인수인계
-
-- 다음 브랜치: `feature/step2-api-skeleton`
-- 인수인계 문서: `steps/step2_retrieval_and_rfp_parse/NEXT_API_TODO.md`
+- 검색은 키워드 빈도 기반이며 임베딩 검색은 미구현
+- 인증/권한 처리 미포함
+- 다음 목표: 벡터DB(ChromaDB) 통합 및 임베딩 검색 고도화
