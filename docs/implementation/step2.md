@@ -36,9 +36,22 @@
   - `app/services/step2_service.py`: 파서 및 검색 서비스 레이어
 - 구현된 엔드포인트
   - `POST /api/v1/rfp/analyze`: 텍스트 및 파일경로 입력 모두 지원
-  - `POST /api/v1/proposals/search`: 키워드 기반 스텁 검색
+  - `POST /api/v1/proposals/search`: 키워드 기반 스텁 검색 (후속 브랜치에서 교체)
   - `GET /api/v1/health`: 헬스체크
 - OpenAPI(`/docs`) 에서 입력/응답 예시 확인 가능
+
+### feature/step2-embedding-retrieval
+
+- 검색 엔진 추상화 계층 추가
+  - `app/services/retrieval_engine.py`: `BaseRetriever` 인터페이스
+  - `app/services/chroma_index_service.py`: `ChromaRetriever` 구현체 + `build_index()`
+- 임베딩 모델: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (로컬 실행)
+- Chroma 인덱스 영속 저장: `local_data/step2/chroma_index`
+- 신규 엔드포인트
+  - `POST /api/v1/proposals/index/rebuild`: Step1 청크 기반 인덱스 재생성
+- 검색 엔드포인트 교체
+  - `POST /api/v1/proposals/search`: 키워드 스텁 → 코사인 유사도 임베딩 검색
+- 헬스체크 응답에 `index_ready` 상태 추가
 
 ## 실행 절차
 
@@ -49,12 +62,23 @@ python "steps/step2_retrieval_and_rfp_parse/run_validation_cases.py"
 # API 서버 실행
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
+
+# 인덱스 생성 (step1 청크 준비 후)
+curl -X POST http://localhost:8000/api/v1/proposals/index/rebuild \
+  -H "Content-Type: application/json" -d '{"reset": true}'
 ```
+
+## 환경변수
+
+| 변수명 | 기본값 | 설명 |
+|---|---|---|
+| `LOCAL_DATA_ROOT` | `<repo>/local_data` | 로컬 데이터 루트 |
+| `CHROMA_INDEX_DIR` | `local_data/step2/chroma_index` | Chroma 인덱스 저장 경로 |
+| `EMBEDDING_MODEL` | `paraphrase-multilingual-MiniLM-L12-v2` | 임베딩 모델명 |
 
 ## 현재 한계
 
 - 파서는 규칙 기반이며 의미 기반(LLM) 추출은 미구현
-- 검색은 키워드 빈도 기반이며 벡터/임베딩 검색은 미구현
 - 인증/권한 처리 미포함
 - 멀티파일 업로드 및 대용량 파일 처리 미지원
 
@@ -65,12 +89,14 @@ uvicorn app.main:app --reload --port 8000
 - [x] 비정형/불완전 RFP 처리 방식 문서화
 - [x] FastAPI 서버 로컬 기동 확인
 - [x] `/rfp/analyze` 텍스트/파일경로 입력 동작 확인
-- [x] `/proposals/search` 스텁 응답 확인
+- [x] `/proposals/index/rebuild` 인덱스 생성 확인
+- [x] `/proposals/search` 임베딩 기반 응답 확인
+- [x] 서버 재시작 후 인덱스 영속성 확인
 - [x] OpenAPI `/docs` 스키마 및 예시 확인
 
 ## 다음 브랜치 연결점
 
-- 대상 브랜치: `feature/step3-generation-pipeline` 또는 `feature/step2-embedding-retrieval`
+- 대상 브랜치: `feature/step3-generation-pipeline`
 - 연결 범위
-  - ChromaDB 통합 및 임베딩 검색 고도화
-  - `/drafts/generate` 엔드포인트 연결 (step3)
+  - `/proposals/search` 결과를 step3 생성 파이프라인 입력으로 연결
+  - `/drafts/generate` 엔드포인트 구현 (step3)

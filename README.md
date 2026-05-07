@@ -39,17 +39,19 @@ Base URL: `http://localhost:8000/api/v1`
 | Method | Endpoint | 상태 | 설명 |
 | --- | --- | --- | --- |
 | POST | `/rfp/analyze` | 구현 | RFP 텍스트/파일경로 입력 → 구조화 요구사항 JSON |
-| POST | `/proposals/search` | 구현(스텁) | 키워드 기반 유사 제안서 청크 검색 |
+| POST | `/proposals/index/rebuild` | 구현 | Step1 청크 기반 Chroma 임베딩 인덱스 재생성 |
+| POST | `/proposals/search` | 구현 | 임베딩 유사도 기반 유사 제안서 청크 검색 |
 | POST | `/drafts/generate` | 예정 | 섹션별 제안서 초안 생성 |
 | POST | `/exports/word` | 예정 | Word 파일 출력 |
 | POST | `/exports/ppt` | 예정 | PPT 파일 출력 |
-| GET | `/health` | 구현 | 서비스 헬스체크 |
+| GET | `/health` | 구현 | 서비스 헬스체크 (인덱스 상태 포함) |
 
 서버 실행:
 
 ```bash
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
+# 최초 실행 또는 step1 데이터 갱신 후: POST /api/v1/proposals/index/rebuild
 # OpenAPI 문서: http://localhost:8000/docs
 ```
 
@@ -78,8 +80,8 @@ uvicorn app.main:app --reload --port 8000
   - 민감 데이터 로컬 전용 정책 반영
   - step2 RFP 파서 품질 강화 (규칙 기반 추출, 스키마 검증 파이프라인)
   - step2 FastAPI API 골격 구현 (`/rfp/analyze`, `/proposals/search`, `/health`)
+  - step2 임베딩 기반 검색 고도화 (`chromadb` + `sentence-transformers`, `/proposals/index/rebuild`)
 - 예정
-  - step2 임베딩/벡터 검색 고도화
   - step3 생성 파이프라인
   - step4 UI/출력
   - step5 통합 테스트/데모

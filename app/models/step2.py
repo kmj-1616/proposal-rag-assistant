@@ -81,16 +81,40 @@ class ProposalSearchResult(BaseModel):
     document_name: str
     chunk_id: str
     preview: str
-    score: int
+    score: float = Field(description="0.0~1.0 코사인 유사도 기반 점수")
 
 
 class ProposalSearchResponse(BaseModel):
     query: str
     results: list[ProposalSearchResult]
     note: str = Field(
-        default="현재 키워드 기반 검색. 임베딩 검색은 후속 브랜치에서 구현 예정.",
+        default="임베딩 기반 검색 (paraphrase-multilingual-MiniLM-L12-v2).",
         description="검색 방식 안내",
     )
+
+
+# ── /proposals/index/rebuild ─────────────────────────────────────────────────
+
+class IndexRebuildRequest(BaseModel):
+    chunks_root: str | None = Field(
+        default=None,
+        description="Step1 청크 루트 디렉터리 경로. 미지정 시 local_data/step1/chunks 사용.",
+        examples=["local_data/step1/chunks"],
+    )
+    reset: bool = Field(
+        default=True,
+        description="기존 컬렉션 삭제 후 재생성 여부.",
+    )
+
+    model_config = {
+        "json_schema_extra": {"examples": [{"reset": True}]}
+    }
+
+
+class IndexRebuildResponse(BaseModel):
+    indexed_count: int = Field(description="인덱싱된 청크 수")
+    index_path: str = Field(description="Chroma 인덱스 저장 경로")
+    model: str = Field(description="사용된 임베딩 모델명")
 
 
 # ── 공통 에러 ────────────────────────────────────────────────────────────────
