@@ -31,6 +31,34 @@
 - `rfp_requirements.json` (스키마 준수)
 - 검색 품질 스모크 테스트 결과 노트
 
+## 검증 방법
+
+### 1) 단일 파일 파싱
+
+```bash
+python "steps/step2_retrieval_and_rfp_parse/parser.py" \
+  --input "<local_rfp_txt_path>" \
+  --output "<local_output_json_path>" \
+  --print-missing
+```
+
+### 2) 스키마 일괄 검증
+
+```bash
+python "steps/step2_retrieval_and_rfp_parse/run_validation_cases.py"
+```
+
+검증 케이스:
+
+- `test_cases/case_normal.txt` (정상 케이스)
+- `test_cases/case_missing.txt` (누락 필드 케이스)
+- `test_cases/case_unstructured.txt` (비정형 케이스)
+
+검증 결과 파일:
+
+- `validation_results/*.report.json` (로컬 생성)
+- 각 리포트에 `valid`, `errors`, `missing_fields` 기록
+
 ## 완료 기준
 
 - 자연어 질의 시 관련 청크 검색이 동작한다.
@@ -106,7 +134,8 @@ curl -X POST http://localhost:8000/api/v1/proposals/search \
 ## 현재 상태
 
 - 파서/검색 스모크 테스트 골격 구현 완료
-- 파서 품질 강화 완료 (feature/step2-rfp-parser-quality)
+- 파서 규칙 고도화 및 누락 필드 출력 지원 완료 (feature/step2-rfp-parser-quality)
+- 스키마 검증 스크립트/테스트 케이스(정상/누락/비정형) 추가 완료
 - FastAPI API 골격 구현 완료 (feature/step2-api-skeleton)
   - `POST /api/v1/rfp/analyze`: 텍스트/파일경로 입력 지원
   - `POST /api/v1/proposals/search`: 키워드 기반 스텁 검색
@@ -114,7 +143,7 @@ curl -X POST http://localhost:8000/api/v1/proposals/search \
 
 ## 한계 및 다음 브랜치 연결점
 
+- 파서가 규칙 기반(정규식 + 키워드)이라 문서 스타일 편차가 큰 경우 누락 가능
 - 검색은 키워드 빈도 기반이며 임베딩 검색은 미구현
-- 파서는 규칙 기반이며 의미 기반 추출은 미구현
 - 인증/권한 처리 미포함
 - 다음 목표: 벡터DB(ChromaDB) 통합 및 임베딩 검색 고도화
