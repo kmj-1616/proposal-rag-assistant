@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# --- Sensitive raw documents (never commit) ---
+**/제안서 모음/**
+**/RFP/**
+**/원본_제안서/**
+
+# --- Derived artifacts from sensitive data (never commit) ---
+**/추출_결과/**
+**/청크_출력/**
+**/*_추출_요약.json
+**/*_청킹_요약.json
+
+# --- Office/PDF payloads excluded from public repo ---
+**/*.ppt
+**/*.pptx
+**/*.pdf
+**/*.doc
+**/*.docx
+
+# --- Legacy local-only workspace directories ---
+과제설명/
+월요일_4월20일_학습데이터구축/
+intern_project_w2.py
+rfp.py
+
+# --- Local runtime data workspace ---
+local_data/
