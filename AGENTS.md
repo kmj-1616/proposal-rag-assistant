@@ -37,6 +37,10 @@
 - step2 스모크 테스트
   - `python "steps/step2_retrieval_and_rfp_parse/retrieval_smoke.py" --chunks "<local_chunks_path>" --query "<질의>"`
   - `python "steps/step2_retrieval_and_rfp_parse/parser.py" --input "<local_rfp_txt>" --output "<local_output_json>"`
+  - `python "steps/step2_retrieval_and_rfp_parse/run_validation_cases.py"`
+- step2 API 서버
+  - `uvicorn app.main:app --reload --port 8000`
+  - `curl http://localhost:8000/api/v1/health`
 
 ## Testing
 

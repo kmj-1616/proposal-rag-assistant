@@ -2,3 +2,6 @@ python-pptx
 PyMuPDF
 pdfplumber
 python-docx
+fastapi
+uvicorn[standard]
+pydantic>=2.0

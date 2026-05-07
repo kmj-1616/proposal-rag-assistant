@@ -32,24 +32,26 @@ step 모듈:
 - `steps/step4_ui_and_export`: UI 및 문서 출력
 - `steps/step5_integration_and_demo`: 통합 검증, 리허설, 데모 패키지
 
-## API 엔드포인트 (예정 중심)
+## API 엔드포인트
 
-현재는 API 서버가 아직 구현되지 않았고, 아래는 목표 엔드포인트입니다.
-
-Base URL(예정): `http://localhost:8000/api/v1`
+Base URL: `http://localhost:8000/api/v1`
 
 | Method | Endpoint | 상태 | 설명 |
 | --- | --- | --- | --- |
-| POST | `/rfp/analyze` | 부분 구현 | RFP 업로드 및 요구사항 구조화 (현재는 CLI 스크립트) |
-| POST | `/proposals/search` | 예정 | 유사 제안서 섹션 검색 |
+| POST | `/rfp/analyze` | 구현 | RFP 텍스트/파일경로 입력 → 구조화 요구사항 JSON |
+| POST | `/proposals/search` | 구현(스텁) | 키워드 기반 유사 제안서 청크 검색 |
 | POST | `/drafts/generate` | 예정 | 섹션별 제안서 초안 생성 |
 | POST | `/exports/word` | 예정 | Word 파일 출력 |
 | POST | `/exports/ppt` | 예정 | PPT 파일 출력 |
-| GET | `/health` | 예정 | 서비스 헬스체크 |
+| GET | `/health` | 구현 | 서비스 헬스체크 |
 
-참고:
-- `steps/step2_retrieval_and_rfp_parse/parser.py` (CLI 기반 RFP 구조화 골격 구현)
-- `steps/step2_retrieval_and_rfp_parse/retrieval_smoke.py` (유사 제안서 검색 스모크 테스트)
+서버 실행:
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+# OpenAPI 문서: http://localhost:8000/docs
+```
 
 ## 지원 파일 포맷
 
@@ -74,9 +76,10 @@ Base URL(예정): `http://localhost:8000/api/v1`
 - 완료
   - step1 스크립트 공개 버전 구성
   - 민감 데이터 로컬 전용 정책 반영
-  - step2 RFP 구조화/유사검색 스모크 테스트 골격 추가
+  - step2 RFP 파서 품질 강화 (규칙 기반 추출, 스키마 검증 파이프라인)
+  - step2 FastAPI API 골격 구현 (`/rfp/analyze`, `/proposals/search`, `/health`)
 - 예정
-  - step2 API 서버화
+  - step2 임베딩/벡터 검색 고도화
   - step3 생성 파이프라인
   - step4 UI/출력
   - step5 통합 테스트/데모
