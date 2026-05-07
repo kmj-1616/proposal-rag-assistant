@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RfpRequirements",
+  "type": "object",
+  "properties": {
+    "project_name": { "type": ["string", "null"] },
+    "organization": { "type": ["string", "null"] },
+    "budget_range": { "type": ["string", "null"] },
+    "purpose_background": { "type": ["string", "null"] },
+    "evaluation_criteria": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "core_requirements": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "authoring_guidelines": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "schedule_constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "must_have_constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": [
+    "project_name",
+    "organization",
+    "budget_range",
+    "purpose_background",
+    "evaluation_criteria",
+    "core_requirements",
+    "authoring_guidelines",
+    "schedule_constraints",
+    "must_have_constraints"
+  ],
+  "additionalProperties": false
+}
