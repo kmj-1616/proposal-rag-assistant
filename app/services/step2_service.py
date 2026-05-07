@@ -5,13 +5,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
-# steps 패키지를 임포트 가능하도록 경로 추가
+# 프로젝트 루트를 sys.path에 추가
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from steps.step2_retrieval_and_rfp_parse.parser import parse_rfp_text
-from steps.step2_retrieval_and_rfp_parse.retrieval_smoke import load_chunks, score
 
 
 _REQUIRED_FIELDS = [
@@ -41,33 +40,26 @@ def analyze_rfp(rfp_text: str) -> dict[str, Any]:
 def search_proposals(
     query: str,
     top_k: int = 5,
-    chunks_root: Path | None = None,
 ) -> list[dict[str, Any]]:
-    """키워드 기반 제안서 청크 검색. chunks_root 미지정 시 local_data 기본값 사용."""
-    if chunks_root is None:
-        chunks_root = _REPO_ROOT / "local_data" / "step1" / "chunks"
+    """임베딩 기반 제안서 청크 검색."""
+    from app.services.chroma_index_service import get_retriever
 
-    if not chunks_root.is_dir():
-        return []
+    retriever = get_retriever()
+    results = retriever.search(query=query, top_k=top_k)
+    return [r.to_dict() for r in results]
 
-    rows = load_chunks(chunks_root)
-    if not rows:
-        return []
 
-    ranked = sorted(
-        ((score(query, text), path, text) for path, text in rows),
-        reverse=True,
-    )
+def rebuild_index(
+    chunks_root_str: str | None = None,
+    reset: bool = True,
+) -> dict[str, Any]:
+    """Step1 청크로 Chroma 인덱스를 재생성한다."""
+    from app.services.chroma_index_service import build_index, get_retriever
 
-    results: list[dict[str, Any]] = []
-    for s, path, text in ranked[:top_k]:
-        preview = " ".join(text.split())[:200]
-        results.append(
-            {
-                "document_name": path.parent.name,
-                "chunk_id": path.stem,
-                "preview": preview,
-                "score": s,
-            }
-        )
-    return results
+    chunks_root = Path(chunks_root_str).expanduser().resolve() if chunks_root_str else None
+    result = build_index(chunks_root=chunks_root, reset=reset)
+
+    # 싱글턴 검색기 인덱스 갱신
+    get_retriever().reload()
+
+    return result

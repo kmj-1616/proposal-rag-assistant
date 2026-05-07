@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.models.step2 import (
     ErrorResponse,
+    IndexRebuildRequest,
+    IndexRebuildResponse,
     ProposalSearchRequest,
     ProposalSearchResponse,
     ProposalSearchResult,
@@ -14,7 +16,7 @@ from app.models.step2 import (
     RfpAnalyzeResponse,
     RfpRequirements,
 )
-from app.services.step2_service import analyze_rfp, search_proposals
+from app.services.step2_service import analyze_rfp, rebuild_index, search_proposals
 
 router = APIRouter(prefix="/api/v1", tags=["step2"])
 
@@ -65,16 +67,57 @@ def rfp_analyze(body: RfpAnalyzeRequest) -> RfpAnalyzeResponse:
 @router.post(
     "/proposals/search",
     response_model=ProposalSearchResponse,
-    summary="유사 제안서 섹션 검색 (키워드 기반 스텁)",
+    responses={503: {"model": ErrorResponse}},
+    summary="유사 제안서 섹션 검색 (임베딩 기반)",
     description=(
-        "질의(`query`)와 유사한 제안서 청크를 반환합니다. "
-        "현재는 키워드 빈도 기반 스모크 검색이며, 임베딩 검색은 후속 브랜치에서 구현 예정입니다."
+        "질의(`query`)와 의미적으로 유사한 제안서 청크를 반환합니다. "
+        "임베딩 모델: `paraphrase-multilingual-MiniLM-L12-v2`. "
+        "인덱스 미생성 시 `POST /api/v1/proposals/index/rebuild`를 먼저 호출하세요."
     ),
 )
 def proposals_search(body: ProposalSearchRequest) -> ProposalSearchResponse:
-    raw_results = search_proposals(query=body.query, top_k=body.top_k)
+    try:
+        raw_results = search_proposals(query=body.query, top_k=body.top_k)
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "error_code": "INDEX_NOT_READY",
+                "message": str(exc),
+                "details": {"hint": "POST /api/v1/proposals/index/rebuild 를 먼저 호출하세요."},
+            },
+        )
     results = [ProposalSearchResult(**r) for r in raw_results]
     return ProposalSearchResponse(query=body.query, results=results)
+
+
+@router.post(
+    "/proposals/index/rebuild",
+    response_model=IndexRebuildResponse,
+    responses={400: {"model": ErrorResponse}},
+    summary="제안서 검색 인덱스 재생성",
+    description=(
+        "Step1 청크 디렉터리를 읽어 Chroma 임베딩 인덱스를 재생성합니다. "
+        "`reset=true`(기본값)이면 기존 인덱스를 삭제 후 재생성합니다. "
+        "처음 실행 또는 step1 데이터 갱신 후 호출하세요."
+    ),
+)
+def index_rebuild(body: IndexRebuildRequest) -> IndexRebuildResponse:
+    try:
+        result = rebuild_index(
+            chunks_root_str=body.chunks_root,
+            reset=body.reset,
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_code": "CHUNKS_NOT_FOUND",
+                "message": str(exc),
+                "details": {"chunks_root": body.chunks_root},
+            },
+        )
+    return IndexRebuildResponse(**result)
 
 
 @router.get(
@@ -83,4 +126,11 @@ def proposals_search(body: ProposalSearchRequest) -> ProposalSearchResponse:
     response_model=dict,
 )
 def health() -> dict:
-    return {"status": "ok", "service": "proposal-rag-assistant"}
+    from app.services.chroma_index_service import get_retriever
+
+    retriever = get_retriever()
+    return {
+        "status": "ok",
+        "service": "proposal-rag-assistant",
+        "index_ready": retriever.index_ready,
+    }

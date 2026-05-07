@@ -65,7 +65,7 @@ python "steps/step2_retrieval_and_rfp_parse/run_validation_cases.py"
 - RFP 업로드 후 구조화 JSON이 안정적으로 생성된다.
 - 필수 추출 항목 누락 여부를 검증할 수 있다.
 
-## API 서버 실행 (feature/step2-api-skeleton)
+## API 서버 실행
 
 ### 사전 준비
 
@@ -84,52 +84,69 @@ uvicorn app.main:app --reload --port 8000
 
 브라우저에서 `http://localhost:8000/docs` 접속
 
-### 샘플 요청
+### 임베딩 검색 사용 순서
 
-**POST /api/v1/rfp/analyze** (텍스트 입력)
+> 처음 실행하거나 step1 데이터 갱신 후에는 인덱스 재생성이 필요합니다.
+
+**1단계: step1 청크로 인덱스 생성**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/proposals/index/rebuild \
+  -H "Content-Type: application/json" \
+  -d '{"reset": true}'
+```
+
+샘플 응답:
+
+```json
+{
+  "indexed_count": 42,
+  "index_path": "local_data/step2/chroma_index",
+  "model": "paraphrase-multilingual-MiniLM-L12-v2"
+}
+```
+
+**2단계: 유사 제안서 검색**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/proposals/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "AI 기반 데이터 분석 플랫폼 구축", "top_k": 5}'
+```
+
+샘플 응답:
+
+```json
+{
+  "query": "AI 기반 데이터 분석 플랫폼 구축",
+  "results": [
+    {
+      "document_name": "proposal_A",
+      "chunk_id": "chunk_003",
+      "preview": "본 제안은 AI 기반 분석 플랫폼 구축을 목표로...",
+      "score": 0.8912
+    }
+  ],
+  "note": "임베딩 기반 검색 (paraphrase-multilingual-MiniLM-L12-v2)."
+}
+```
+
+**RFP 파싱**
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/rfp/analyze \
   -H "Content-Type: application/json" \
   -d '{
-    "rfp_text": "프로젝트명: AI 기반 제안서 자동화 시스템\n발주기관: 한국정보화진흥원\n예산: 3억원\n사업 목적: RFP 자동 분석 및 제안서 초안 생성\n평가기준: 기술평가 80점, 가격평가 20점"
+    "rfp_text": "프로젝트명: AI 기반 제안서 자동화 시스템\n발주기관: 한국정보화진흥원\n예산: 3억원"
   }'
 ```
 
-**POST /api/v1/rfp/analyze** (파일경로 입력)
+### 환경변수
 
-```bash
-curl -X POST http://localhost:8000/api/v1/rfp/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"rfp_file_path": "/path/to/local/rfp.txt"}'
-```
-
-**POST /api/v1/proposals/search**
-
-```bash
-curl -X POST http://localhost:8000/api/v1/proposals/search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "AI 기반 데이터 분석 플랫폼", "top_k": 5}'
-```
-
-### 샘플 응답 (/rfp/analyze)
-
-```json
-{
-  "rfp_requirements": {
-    "project_name": "AI 기반 제안서 자동화 시스템",
-    "organization": "한국정보화진흥원",
-    "budget_range": "3억원",
-    "purpose_background": "RFP 자동 분석 및 제안서 초안 생성",
-    "evaluation_criteria": ["평가기준: 기술평가 80점, 가격평가 20점"],
-    "core_requirements": [],
-    "authoring_guidelines": [],
-    "schedule_constraints": [],
-    "must_have_constraints": []
-  },
-  "missing_fields": ["core_requirements", "authoring_guidelines", "schedule_constraints", "must_have_constraints"]
-}
-```
+| 변수명 | 기본값 | 설명 |
+|---|---|---|
+| `CHROMA_INDEX_DIR` | `local_data/step2/chroma_index` | Chroma 인덱스 저장 경로 |
+| `EMBEDDING_MODEL` | `paraphrase-multilingual-MiniLM-L12-v2` | sentence-transformers 모델명 |
 
 ## 현재 상태
 
@@ -137,13 +154,12 @@ curl -X POST http://localhost:8000/api/v1/proposals/search \
 - 파서 규칙 고도화 및 누락 필드 출력 지원 완료 (feature/step2-rfp-parser-quality)
 - 스키마 검증 스크립트/테스트 케이스(정상/누락/비정형) 추가 완료
 - FastAPI API 골격 구현 완료 (feature/step2-api-skeleton)
-  - `POST /api/v1/rfp/analyze`: 텍스트/파일경로 입력 지원
-  - `POST /api/v1/proposals/search`: 키워드 기반 스텁 검색
-  - `GET /api/v1/health`: 헬스체크
+- 임베딩 기반 검색 고도화 완료 (feature/step2-embedding-retrieval)
+  - `POST /api/v1/proposals/index/rebuild`: Chroma 인덱스 재생성
+  - `POST /api/v1/proposals/search`: 임베딩 유사도 기반 검색
 
 ## 한계 및 다음 브랜치 연결점
 
 - 파서가 규칙 기반(정규식 + 키워드)이라 문서 스타일 편차가 큰 경우 누락 가능
-- 검색은 키워드 빈도 기반이며 임베딩 검색은 미구현
 - 인증/권한 처리 미포함
-- 다음 목표: 벡터DB(ChromaDB) 통합 및 임베딩 검색 고도화
+- 다음 목표: step3 섹션별 초안 생성 파이프라인
