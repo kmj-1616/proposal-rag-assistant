@@ -1,18 +1,18 @@
-# step4 Implementation Notes
+# step4 구현 노트
 
-## Scope
+## 범위
 
-- UI for upload -> parse -> generate -> export
-- File export with Word as minimum target
+- 업로드 -> 분석 -> 생성 -> 출력 UI 흐름 구현
+- 최소 Word 출력 기능 제공
 
-## Planned Deliverables
+## 예정 산출물
 
-- Streamlit app skeleton
-- generation preview panel
-- download/export endpoint
+- Streamlit 앱 스캐폴드
+- 생성 결과 미리보기 패널
+- 다운로드/내보내기 기능
 
-## Validation Checklist
+## 검증 체크리스트
 
-- [ ] full flow works in one UI session
-- [ ] exported document has expected sections
-- [ ] recoverable error messages for failed generation
+- [ ] 한 세션 내 전체 흐름 동작 확인
+- [ ] 출력 문서의 섹션 구조 정상 확인
+- [ ] 생성 실패 시 복구 가능한 오류 메시지 제공

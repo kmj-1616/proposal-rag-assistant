@@ -1,18 +1,18 @@
-# step5 Implementation Notes
+# step5 구현 노트
 
-## Scope
+## 범위
 
-- End-to-end integration check
-- Demo scenario finalization
+- 종단 간 통합 검증
+- 데모 시나리오 최종 정리
 
-## Planned Deliverables
+## 예정 산출물
 
-- runbook for demo execution
-- known limitations and next improvements
-- final status report
+- 데모 실행 런북
+- 한계점 및 개선 아이디어 정리
+- 최종 상태 보고서
 
-## Validation Checklist
+## 검증 체크리스트
 
-- [ ] end-to-end demo reproducible
-- [ ] timing fits presentation slot
-- [ ] fallback strategy prepared for live issues
+- [ ] End-to-End 데모 재현 가능
+- [ ] 발표 시간 내 시연 흐름 검증 완료
+- [ ] 라이브 이슈 대응용 대체 시나리오 준비

@@ -1,38 +1,44 @@
-# Data Security Policy (Public Repository)
+# 데이터 보안 정책 (공개 저장소)
 
-## Scope
+## 범위
 
-This repository is public. Real proposal documents and real RFP files must never be committed.
+이 저장소는 공개 저장소이며, 실제 제안서/RFP 원문 데이터는 절대 커밋하면 안 됩니다.
 
-## Never Commit
+## 커밋 금지 항목
 
-- Raw source documents:
-  - Any files under `제안서 모음`, `RFP`, `원본_제안서`
-- Derived artifacts from source documents:
-  - Any files under `추출_결과`, `청크_출력`
-  - Any extraction/chunking summary JSON files
-- Office and PDF payloads (`.pptx`, `.pdf`, `.docx`, etc.)
+- 원본 문서:
+  - `제안서 모음`, `RFP`, `원본_제안서` 하위 파일
+- 원본 기반 파생 산출물:
+  - `추출_결과`, `청크_출력` 하위 파일
+  - 추출/청킹 요약 JSON
+- 오피스/PDF 바이너리:
+  - `.pptx`, `.pdf`, `.docx` 등
 
-## Allowed in Public Repo
+## 공개 저장소에 허용되는 항목
 
-- Source code
-- Architecture/design docs
-- Implementation notes per step
-- Templates/schemas that do not contain real customer data
+- 소스 코드
+- 아키텍처/설계 문서
+- 단계별 구현 노트
+- 실데이터를 포함하지 않는 템플릿/스키마
 
-## Safe Workflow Before Each Commit
+## 커밋 전 안전 점검 절차
 
-1. Run `git status` and inspect staged files.
-2. Ensure no paths include:
+1. `git status`로 스테이징 대상 확인
+2. 경로에 아래 키워드가 없는지 확인
    - `제안서`, `RFP`, `원본_제안서`, `추출_결과`, `청크_출력`
-3. Ensure no office/PDF binaries are staged.
-4. Commit only code and sanitized documentation.
+3. 오피스/PDF 바이너리 파일이 스테이징되지 않았는지 확인
+4. 코드와 비식별 문서만 커밋
 
-## Incident Response
+## 사고 대응
 
-If sensitive data is committed by mistake:
+민감 데이터가 실수로 커밋된 경우:
 
-1. Stop pushing immediately.
-2. Rotate/replace exposed files in local environment.
-3. Rewrite repository history (e.g. `git filter-repo` or BFG).
-4. Force-push cleaned history only after verification.
+1. 즉시 푸시 중단
+2. 로컬 노출 파일 교체/폐기
+3. `git filter-repo` 또는 BFG로 히스토리 정리
+4. 정리 검증 후에만 강제 푸시 진행
+
+## 관련 문서
+
+- 저장소 운영 규칙: `AGENTS.md`
+- 프로젝트 개요/실행 가이드: `README.md`

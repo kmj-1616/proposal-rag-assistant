@@ -1,18 +1,18 @@
-# step2 Implementation Notes
+# step2 구현 노트
 
-## Scope
+## 범위
 
-- Build retrieval index from step1 chunks
-- Parse RFP into structured requirements JSON
+- step1 청크 기반 검색 인덱스 구축
+- RFP를 구조화된 요구사항 JSON으로 파싱
 
-## Planned Deliverables
+## 예정 산출물
 
-- Retrieval smoke-test script
-- RFP schema definition
-- Parser module and validation outputs
+- 검색 스모크 테스트 스크립트
+- RFP 요구사항 스키마 정의
+- 파서 모듈 및 검증 결과
 
-## Validation Checklist
+## 검증 체크리스트
 
-- [ ] retrieval relevance checked with 5+ queries
-- [ ] required RFP fields extracted
-- [ ] malformed/partial RFP handling documented
+- [ ] 5개 이상 질의로 검색 관련성 점검
+- [ ] 필수 RFP 필드 추출 확인
+- [ ] 비정형/불완전 RFP 처리 방식 문서화

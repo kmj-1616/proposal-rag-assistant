@@ -1,21 +1,21 @@
-# step1 Implementation Notes
+# step1 구현 노트
 
-## Scope
+## 범위
 
-- Selected proposal copy
-- Text extraction from local proposal files
-- Chunk generation for retrieval
+- 선정된 제안서 파일 복사
+- 로컬 제안서 텍스트 추출
+- 검색용 청크 생성
 
-## Public Changes
+## 공개 저장소 반영 내용
 
-- Added step-based scripts under `steps/step1_data_prep/scripts/`
-- Replaced hardcoded legacy paths with:
-  - project-relative defaults
-  - environment-variable overrides
+- `steps/step1_data_prep/scripts/`에 step1 스크립트 구성
+- 기존 날짜 기반 하드코딩 경로 제거
+  - 프로젝트 상대경로 기본값 적용
+  - 환경변수 오버라이드 지원
 
-## Local Validation Checklist
+## 로컬 검증 체크리스트
 
-- [ ] `proposal_candidates.csv` prepared in local path
-- [ ] selected source files copied to raw folder
-- [ ] text extraction completed without failures
-- [ ] chunk files generated under local step1 directory
+- [ ] 로컬 경로에 `proposal_candidates.csv` 준비
+- [ ] 선택된 원본 파일이 `raw_proposals`로 정상 복사됨
+- [ ] 텍스트 추출 실패 없이 완료됨
+- [ ] step1 로컬 경로에 청크 파일이 생성됨

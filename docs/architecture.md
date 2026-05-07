@@ -1,21 +1,21 @@
-# Architecture
+# 아키텍처
 
-## System Overview
+## 시스템 개요
 
-The project is organized as step-wise modules:
+프로젝트는 step 단위 모듈로 구성됩니다.
 
-1. `step1_data_prep`: prepare retrieval-ready chunks from local proposal files
-2. `step2_retrieval_and_rfp_parse`: build retrieval index and parse RFP into structured requirements
-3. `step3_generation_pipeline`: generate draft sections from requirements + retrieved context
-4. `step4_ui_and_export`: interactive UI flow and document export
-5. `step5_integration_and_demo`: end-to-end validation and demo package
+1. `step1_data_prep`: 로컬 제안서에서 검색용 청크 생성
+2. `step2_retrieval_and_rfp_parse`: 검색 인덱스 구축 + RFP 구조화
+3. `step3_generation_pipeline`: 요구사항 + 검색 컨텍스트 기반 섹션 생성
+4. `step4_ui_and_export`: 사용자 UI 흐름 및 문서 출력
+5. `step5_integration_and_demo`: 종단 간 검증 및 데모 패키지 정리
 
-## Data Boundary
+## 데이터 경계
 
-- Sensitive source data stays outside versioned assets (`local_data/` only).
-- Public repo keeps only code, schemas, and documentation.
+- 민감한 원본 데이터는 버전 관리 대상 밖(`local_data/` 전용)에서만 처리합니다.
+- 공개 저장소에는 코드, 스키마, 문서만 유지합니다.
 
-## Data Flow
+## 데이터 흐름
 
 ```mermaid
 flowchart TD
@@ -28,14 +28,14 @@ flowchart TD
   step4Ui --> step5Demo[Step5IntegrationDemo]
 ```
 
-## Component Contracts
+## 단계별 출력 계약
 
-- Step1 output contract:
-  - chunk files with metadata header
-  - extraction/chunking summary JSON (local only)
-- Step2 output contract:
-  - structured RFP JSON schema
-  - retrieval hit list with source metadata
-- Step3 output contract:
-  - section-level generated draft text
-  - prompt version and evaluation notes
+- step1 출력 계약
+  - 메타데이터 헤더를 포함한 청크 파일
+  - 추출/청킹 요약 JSON(로컬 전용)
+- step2 출력 계약
+  - RFP 구조화 JSON(스키마 준수)
+  - 검색 결과 목록(출처 메타데이터 포함)
+- step3 출력 계약
+  - 섹션 단위 생성 초안 텍스트
+  - 프롬프트 버전 및 평가 노트

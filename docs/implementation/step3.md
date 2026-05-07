@@ -1,19 +1,19 @@
-# step3 Implementation Notes
+# step3 구현 노트
 
-## Scope
+## 범위
 
-- Section-level proposal generation pipeline
-- Prompt versioning and output comparison
+- 섹션 단위 제안서 생성 파이프라인
+- 프롬프트 버전 관리 및 결과 비교
 
-## Planned Deliverables
+## 예정 산출물
 
-- section planner
-- prompt templates
-- generation runner
-- comparison notes for at least 3 prompt variants
+- 섹션 플래너
+- 프롬프트 템플릿
+- 생성 실행기
+- 프롬프트 3개 이상 비교 노트
 
-## Validation Checklist
+## 검증 체크리스트
 
-- [ ] section-by-section flow stable
-- [ ] output aligns with parsed RFP requirements
-- [ ] tone/style alignment improved with retrieval context
+- [ ] 섹션 단위 생성 흐름 안정화
+- [ ] 출력이 RFP 요구사항과 정합성 유지
+- [ ] 검색 컨텍스트 반영 시 톤/스타일 개선 확인

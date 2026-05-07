@@ -1,30 +1,30 @@
-# Tech Decisions
+# 기술 선택 근거
 
-## Decision Summary
+## 선택 요약
 
-- Language: Python
-- Document extraction: `python-pptx`, `PyMuPDF`, `pdfplumber`
-- Retrieval backend (planned): ChromaDB
-- Embedding model (planned): to be finalized in step2 benchmark
-- Generation model interface (planned): pluggable LLM client
-- UI (planned): Streamlit first, optional Gradio alternative
-- Export (planned): `python-docx` as minimum, `python-pptx` optional
+- 언어: Python
+- 문서 추출: `python-pptx`, `PyMuPDF`, `pdfplumber`
+- 검색 백엔드(예정): ChromaDB
+- 임베딩 모델(예정): step2 벤치마크 후 확정
+- 생성 모델 인터페이스(예정): 교체 가능한 LLM 클라이언트 구조
+- UI(예정): Streamlit 우선, 필요 시 Gradio 대체
+- 출력(예정): `python-docx` 우선, `python-pptx`는 선택 적용
 
-## Why This Stack
+## 이 스택을 선택한 이유
 
-- Python ecosystem already matches extraction/export needs.
-- ChromaDB gives fast local iteration for retrieval prototyping.
-- Streamlit minimizes UI boilerplate and accelerates demo readiness.
-- Word export first reduces implementation risk while preserving delivery value.
+- Python 생태계가 추출/생성/출력까지 한 흐름으로 연결하기 쉽습니다.
+- ChromaDB는 로컬에서 검색 품질 실험을 빠르게 반복하기 좋습니다.
+- Streamlit은 UI 보일러플레이트를 줄여 데모 준비 속도를 높입니다.
+- Word 출력 우선 전략은 구현 리스크를 낮추면서도 산출물 가치를 확보합니다.
 
-## Trade-offs
+## 트레이드오프
 
-- Local-first setup improves privacy but requires explicit environment setup.
-- Excluding all office/PDF files from git reduces leakage risk but limits reproducible sample bundles.
-- Step-wise module split improves clarity but requires stricter interface contracts between steps.
+- 로컬 우선 구성은 보안에 유리하지만 환경 설정 책임이 커집니다.
+- 오피스/PDF 파일 전면 제외는 유출 위험을 줄이지만 재현 가능한 샘플 패키지 제공은 제한됩니다.
+- step 분리는 구조 명확성에 유리하지만 단계 간 인터페이스 계약을 엄격히 지켜야 합니다.
 
-## Revisit Points
+## 재검토 포인트
 
-- Embedding model quality vs latency after step2 retrieval tests
-- Section generation prompt strategy after step3 quality review
-- UI framework swap only if Streamlit fails required interactions
+- step2 검색 테스트 이후 임베딩 모델의 품질/지연시간 균형
+- step3 품질 점검 이후 프롬프트 전략 고도화
+- Streamlit이 요구 상호작용을 만족하지 못할 경우 UI 프레임워크 전환
