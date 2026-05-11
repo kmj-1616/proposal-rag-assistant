@@ -41,7 +41,7 @@ Base URL: `http://localhost:8000/api/v1`
 | POST | `/rfp/analyze` | 구현 | RFP 텍스트/파일경로 입력 → 구조화 요구사항 JSON |
 | POST | `/proposals/index/rebuild` | 구현 | Step1 청크 기반 Chroma 임베딩 인덱스 재생성 |
 | POST | `/proposals/search` | 구현 | 임베딩 유사도 기반 유사 제안서 청크 검색 |
-| POST | `/drafts/generate` | 예정 | 섹션별 제안서 초안 생성 |
+| POST | `/drafts/generate` | 구현 | RFP + 검색 컨텍스트 기반 섹션별 제안서 초안 생성 (Ollama 또는 OpenAI 호환 LLM) |
 | POST | `/exports/word` | 예정 | Word 파일 출력 |
 | POST | `/exports/ppt` | 예정 | PPT 파일 출력 |
 | GET | `/health` | 구현 | 서비스 헬스체크 (인덱스 상태 포함) |
@@ -81,8 +81,8 @@ uvicorn app.main:app --reload --port 8000
   - step2 RFP 파서 품질 강화 (규칙 기반 추출, 스키마 검증 파이프라인)
   - step2 FastAPI API 골격 구현 (`/rfp/analyze`, `/proposals/search`, `/health`)
   - step2 임베딩 기반 검색 고도화 (`chromadb` + `sentence-transformers`, `/proposals/index/rebuild`)
+  - step3 `/drafts/generate` API (OpenAI 호환 LLM 어댑터 기반 섹션별 초안 생성, Ollama/OpenAI 지원)
 - 예정
-  - step3 생성 파이프라인
   - step4 UI/출력
   - step5 통합 테스트/데모
 

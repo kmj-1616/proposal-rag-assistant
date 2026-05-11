@@ -20,6 +20,61 @@ from app.services.step2_service import analyze_rfp, rebuild_index, search_propos
 
 router = APIRouter(prefix="/api/v1", tags=["step2"])
 
+_SUPPORTED_EXTS = {".txt", ".md", ".docx", ".pdf"}
+
+
+def _read_file_text(file_path: Path, raw_path: str | None) -> str:
+    """파일 확장자에 따라 텍스트를 추출한다. .txt/.md/.docx/.pdf 지원."""
+    ext = file_path.suffix.lower()
+    if ext not in _SUPPORTED_EXTS:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error_code": "UNSUPPORTED_FILE_TYPE",
+                "message": f"지원하지 않는 파일 형식입니다: '{ext}'. 지원 형식: {sorted(_SUPPORTED_EXTS)}",
+                "details": {"rfp_file_path": raw_path},
+            },
+        )
+    if ext == ".docx":
+        return _read_docx(file_path, raw_path)
+    if ext == ".pdf":
+        return _read_pdf(file_path, raw_path)
+    return file_path.read_text(encoding="utf-8", errors="replace")
+
+
+def _read_docx(file_path: Path, raw_path: str | None) -> str:
+    try:
+        from docx import Document  # python-docx
+        doc = Document(str(file_path))
+        return "\n".join(para.text for para in doc.paragraphs)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error_code": "FILE_READ_ERROR",
+                "message": f".docx 파일을 읽는 중 오류가 발생했습니다: {exc}",
+                "details": {"rfp_file_path": raw_path},
+            },
+        )
+
+
+def _read_pdf(file_path: Path, raw_path: str | None) -> str:
+    try:
+        import fitz  # PyMuPDF
+        doc = fitz.open(str(file_path))
+        pages = [page.get_text() for page in doc]
+        doc.close()
+        return "\n".join(pages)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error_code": "FILE_READ_ERROR",
+                "message": f".pdf 파일을 읽는 중 오류가 발생했습니다: {exc}",
+                "details": {"rfp_file_path": raw_path},
+            },
+        )
+
 
 @router.post(
     "/rfp/analyze",
@@ -28,7 +83,8 @@ router = APIRouter(prefix="/api/v1", tags=["step2"])
     summary="RFP 텍스트 구조화 파싱",
     description=(
         "RFP 전문 텍스트(`rfp_text`) 또는 로컬 파일 경로(`rfp_file_path`)를 받아 "
-        "구조화된 요구사항 JSON을 반환합니다."
+        "구조화된 요구사항 JSON을 반환합니다.\n\n"
+        "지원 파일 형식: `.txt`, `.md`, `.docx`, `.pdf`"
     ),
 )
 def rfp_analyze(body: RfpAnalyzeRequest) -> RfpAnalyzeResponse:
@@ -55,7 +111,7 @@ def rfp_analyze(body: RfpAnalyzeRequest) -> RfpAnalyzeResponse:
                     "details": {"rfp_file_path": body.rfp_file_path},
                 },
             )
-        text = file_path.read_text(encoding="utf-8", errors="replace")
+        text = _read_file_text(file_path, body.rfp_file_path)
 
     result = analyze_rfp(text)
     return RfpAnalyzeResponse(
