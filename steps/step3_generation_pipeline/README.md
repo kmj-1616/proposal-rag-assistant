@@ -53,7 +53,7 @@ curl -X POST http://localhost:8000/api/v1/drafts/generate \
 ## 사전 조건
 
 1. Ollama 설치 및 서버 기동: `ollama serve`
-2. 모델 다운로드: `ollama pull qwen2.5:7b`
+2. 모델 다운로드: `ollama pull qwen2.5:0.5b` (RAM 여유에 따라 3b/7b 선택 가능)
 3. (선택) 검색 인덱스 구축: `POST /api/v1/proposals/index/rebuild`
 
 > OpenAI 등 다른 LLM 사용 시 `.env`의 `LLM_BASE_URL` / `LLM_MODEL` / `LLM_API_KEY`를 변경하세요.
@@ -74,4 +74,4 @@ curl -X POST http://localhost:8000/api/v1/drafts/generate \
 
 - API 구현 완료 (`POST /api/v1/drafts/generate`)
 - OpenAI 호환 LLM 어댑터 구현 완료 (Ollama 기본, 환경변수로 전환)
-- 실 실행 검증 진행 중
+- 실 실행 검증 완료 (헬스체크·422 케이스 확인, 생성 케이스는 RAM 확보 후 재검증 예정)
