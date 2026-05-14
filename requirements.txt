@@ -9,3 +9,5 @@ uvicorn[standard]
 pydantic>=2.0
 chromadb
 sentence-transformers
+streamlit
+requests
