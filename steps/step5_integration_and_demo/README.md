@@ -31,7 +31,19 @@
 - 데모 시나리오가 실제 데이터로 재현 가능하다.
 - 비교/한계/개선 포인트가 문서로 정리되어 있다.
 
+## 실행 방법
+
+```bash
+# API 서버
+uvicorn app.main:app --port 8000
+
+# Streamlit UI
+streamlit run steps/step4_ui_and_export/app.py
+```
+
+상세 런북 및 폴백 시나리오는 [`docs/implementation/step5.md`](../../docs/implementation/step5.md)를 참조하세요.
+
 ## 현재 상태
 
-- step5 요구사항 문서화 완료
-- 통합 검증 및 데모 패키지 구성은 진행 예정
+- 데모 런북 및 장애 대응 시나리오 문서화 완료 (`docs/implementation/step5.md`)
+- E2E 전체 흐름 검증은 RAM 확보 후 진행 예정
