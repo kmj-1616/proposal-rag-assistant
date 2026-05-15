@@ -46,4 +46,7 @@ streamlit run steps/step4_ui_and_export/app.py
 ## 현재 상태
 
 - 데모 런북 및 장애 대응 시나리오 문서화 완료 (`docs/implementation/step5.md`)
-- E2E 전체 흐름 검증은 RAM 확보 후 진행 예정
+- E2E 전체 흐름 검증 완료 (2026-05-14)
+  - `index/rebuild` → `drafts/generate` → `exports/word` 순서로 전 구간 통과
+  - 초안 생성 6개 섹션, Word 파일 36,848 bytes 정상 반환
+  - 상세 결과는 `docs/implementation/step5.md` 참조

@@ -16,9 +16,10 @@ app = FastAPI(
         "- `POST /api/v1/proposals/index/rebuild`: 검색 인덱스 재생성\n"
         "- `POST /api/v1/drafts/generate`: RFP + 검색 컨텍스트 기반 섹션별 초안 생성\n"
         "- `POST /api/v1/exports/word`: 섹션 초안 → Word(.docx) 파일 내보내기\n"
+        "- `POST /api/v1/exports/ppt`: 섹션 초안 → PowerPoint(.pptx) 파일 내보내기\n"
         "- `GET /api/v1/health`: 헬스체크"
     ),
-    version="0.3.0",
+    version="0.4.0",
 )
 
 app.include_router(step2_router)

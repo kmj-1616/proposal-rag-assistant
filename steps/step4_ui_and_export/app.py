@@ -193,32 +193,66 @@ if st.session_state.draft_result:
             st.markdown(section["content"])
 
     st.divider()
-    st.subheader("Word 파일 다운로드")
+    st.subheader("파일 다운로드")
 
-    if st.button("Word(.docx) 생성"):
-        with st.spinner("Word 파일을 만드는 중..."):
-            try:
-                resp = requests.post(
-                    f"{API_BASE}/exports/word",
-                    json={
-                        "project_name": result.get("project_name"),
-                        "sections": result.get("sections", []),
-                    },
-                    timeout=30,
-                )
-                if resp.status_code == 200:
-                    project = result.get("project_name") or "proposal_draft"
-                    safe = "".join(c if c.isalnum() or c in " _-" else "_" for c in project)
-                    filename = f"{safe.strip().replace(' ', '_')[:50]}.docx"
-                    st.download_button(
-                        label="📥 Word 파일 다운로드",
-                        data=BytesIO(resp.content),
-                        file_name=filename,
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    col_word, col_ppt = st.columns(2)
+
+    with col_word:
+        if st.button("Word(.docx) 생성", key="btn_word"):
+            with st.spinner("Word 파일을 만드는 중..."):
+                try:
+                    resp = requests.post(
+                        f"{API_BASE}/exports/word",
+                        json={
+                            "project_name": result.get("project_name"),
+                            "sections": result.get("sections", []),
+                        },
+                        timeout=30,
                     )
-                else:
-                    st.error(f"파일 생성 실패: {resp.status_code} — {resp.text}")
-            except requests.exceptions.ConnectionError:
-                st.error("API 서버에 연결할 수 없습니다.")
-            except requests.exceptions.Timeout:
-                st.error("파일 생성 요청 시간이 초과됐습니다.")
+                    if resp.status_code == 200:
+                        project = result.get("project_name") or "proposal_draft"
+                        safe = "".join(c if c.isalnum() or c in " _-" else "_" for c in project)
+                        filename = f"{safe.strip().replace(' ', '_')[:50]}.docx"
+                        st.download_button(
+                            label="📥 Word 파일 다운로드",
+                            data=BytesIO(resp.content),
+                            file_name=filename,
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            key="dl_word",
+                        )
+                    else:
+                        st.error(f"파일 생성 실패: {resp.status_code} — {resp.text}")
+                except requests.exceptions.ConnectionError:
+                    st.error("API 서버에 연결할 수 없습니다.")
+                except requests.exceptions.Timeout:
+                    st.error("파일 생성 요청 시간이 초과됐습니다.")
+
+    with col_ppt:
+        if st.button("PPT(.pptx) 생성", key="btn_ppt"):
+            with st.spinner("PPT 파일을 만드는 중..."):
+                try:
+                    resp = requests.post(
+                        f"{API_BASE}/exports/ppt",
+                        json={
+                            "project_name": result.get("project_name"),
+                            "sections": result.get("sections", []),
+                        },
+                        timeout=30,
+                    )
+                    if resp.status_code == 200:
+                        project = result.get("project_name") or "proposal_draft"
+                        safe = "".join(c if c.isalnum() or c in " _-" else "_" for c in project)
+                        filename = f"{safe.strip().replace(' ', '_')[:50]}.pptx"
+                        st.download_button(
+                            label="📥 PPT 파일 다운로드",
+                            data=BytesIO(resp.content),
+                            file_name=filename,
+                            mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                            key="dl_ppt",
+                        )
+                    else:
+                        st.error(f"파일 생성 실패: {resp.status_code} — {resp.text}")
+                except requests.exceptions.ConnectionError:
+                    st.error("API 서버에 연결할 수 없습니다.")
+                except requests.exceptions.Timeout:
+                    st.error("파일 생성 요청 시간이 초과됐습니다.")
