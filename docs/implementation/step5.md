@@ -123,7 +123,20 @@ print("Word 파일 저장: demo_output.docx")
 | 생성 품질 | `qwen2.5:0.5b` 기준 초안 수준 | 더 큰 모델(3b/7b) 또는 OpenAI 전환 시 개선 |
 | RFP 파서 | 규칙 기반, 비정형 RFP 에서 필드 누락 가능 | LLM 기반 파서로 교체 시 정확도 향상 |
 | Word 서식 | 기본 스타일 (제목/본문 2단계) | 회사 템플릿 적용은 후속 과제 |
-| PPT 출력 | 미구현 | `python-pptx` 기반 추후 추가 가능 |
+| PPT 출력 | 구현 완료 | 표지·목차·섹션 슬라이드, 긴 섹션 자동 분할 |
+
+## E2E 통합 검증 결과 (2026-05-14 / 2026-05-15 PPT 추가)
+
+| 단계 | 엔드포인트 | 결과 | 비고 |
+| --- | --- | --- | --- |
+| 헬스체크 | `GET /health` | ✅ `{"status":"ok","index_ready":true}` | - |
+| 인덱스 리빌드 | `POST /proposals/index/rebuild` | ✅ 560청크 인덱싱 완료 | 소요 약 44초 |
+| 초안 생성 | `POST /drafts/generate` | ✅ 6개 섹션 생성 완료 | 소요 약 8.7분 (CPU, qwen2.5:0.5b) |
+| Word 내보내기 | `POST /exports/word` | ✅ 36,848 bytes `.docx` 반환 | RFC 5987 한글 파일명 정상 |
+| PPT 내보내기 | `POST /exports/ppt` | ✅ 31,306 bytes `.pptx` 반환 | 표지·목차·섹션 슬라이드 자동 생성 |
+
+- 테스트 환경: Windows 10, CPU 추론, qwen2.5:0.5b (394 MB), 포트 8001
+- 인덱스 모델: `paraphrase-multilingual-MiniLM-L12-v2`
 
 ## 검증 체크리스트
 
@@ -132,5 +145,6 @@ print("Word 파일 저장: demo_output.docx")
 - [x] 유사 제안서 검색(`/proposals/search`) 동작 확인
 - [x] LLM 오류 케이스 503 에러 정상 반환
 - [x] Word 내보내기(`/exports/word`) 정상 반환
+- [x] PPT 내보내기(`/exports/ppt`) 정상 반환
 - [x] Streamlit UI 기동 확인
-- [ ] E2E 초안 생성 → Word 다운로드 전체 흐름 (RAM 확보 후 검증)
+- [x] E2E 초안 생성 → Word 다운로드 전체 흐름 검증 완료
