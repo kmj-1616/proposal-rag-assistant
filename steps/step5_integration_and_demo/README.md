@@ -50,3 +50,7 @@ streamlit run steps/step4_ui_and_export/app.py
   - `index/rebuild` → `drafts/generate` → `exports/word` 순서로 전 구간 통과
   - 초안 생성 6개 섹션, Word 파일 36,848 bytes 정상 반환
   - 상세 결과는 `docs/implementation/step5.md` 참조
+- PPT 내보내기 구현 완료 (2026-05-15)
+  - `POST /api/v1/exports/ppt` 엔드포인트 추가
+  - 표지·목차·섹션 슬라이드 자동 구성, 긴 섹션 자동 분할
+  - Streamlit UI PPT 다운로드 버튼 추가

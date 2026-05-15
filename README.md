@@ -43,7 +43,7 @@ Base URL: `http://localhost:8000/api/v1`
 | POST | `/proposals/search` | 구현 | 임베딩 유사도 기반 유사 제안서 청크 검색 |
 | POST | `/drafts/generate` | 구현 | RFP + 검색 컨텍스트 기반 섹션별 제안서 초안 생성 (Ollama 또는 OpenAI 호환 LLM) |
 | POST | `/exports/word` | 구현 | 섹션 초안 → Word(.docx) 파일 내보내기 |
-| POST | `/exports/ppt` | 예정 | PPT 파일 출력 |
+| POST | `/exports/ppt` | 구현 | 섹션 초안 → PowerPoint(.pptx) 파일 내보내기 (표지·목차·섹션 자동 구성) |
 | GET | `/health` | 구현 | 서비스 헬스체크 (인덱스 상태 포함) |
 
 서버 실행:
@@ -91,10 +91,9 @@ streamlit run steps/step4_ui_and_export/app.py
   - step3 `/drafts/generate` API (OpenAI 호환 LLM 어댑터 기반 섹션별 초안 생성, Ollama/OpenAI 지원)
   - step4 Streamlit UI (RFP 입력 → 분석 → 생성 → 다운로드 흐름)
   - step4 `/exports/word` Word(.docx) 내보내기 API (마크다운 → Word 스타일 자동 변환)
+  - step4 `/exports/ppt` PowerPoint 내보내기 API (표지·목차·섹션 슬라이드 자동 생성)
   - step5 데모 런북 및 장애 대응 시나리오 문서화 (`docs/implementation/step5.md`)
-- 예정
-  - step4 PPT 출력
-  - step5 E2E 통합 검증 (RAM 확보 후)
+  - step5 E2E 통합 검증 완료 (2026-05-14)
 
 ## 빠른 시작 (Step1, 로컬 전용)
 
