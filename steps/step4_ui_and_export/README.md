@@ -31,7 +31,20 @@
 - 출력 파일의 섹션 구조/본문 내용이 정상 생성된다.
 - 오류 발생 시 사용자가 복구 가능한 메시지를 확인할 수 있다.
 
+## 실행 방법
+
+```bash
+# API 서버가 먼저 실행 중이어야 합니다
+uvicorn app.main:app --port 8000
+
+# Streamlit UI 실행 (프로젝트 루트에서)
+streamlit run steps/step4_ui_and_export/app.py
+```
+
+브라우저에서 `http://localhost:8501` 접속
+
 ## 현재 상태
 
-- step4 요구사항 문서화 완료
-- UI 및 출력 모듈 구현은 진행 예정
+- Streamlit UI 구현 완료 (`steps/step4_ui_and_export/app.py`)
+- `POST /api/v1/exports/word` Word 내보내기 API 구현 완료
+- E2E 흐름 검증 진행 예정 (LLM 생성 포함)

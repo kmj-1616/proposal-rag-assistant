@@ -32,24 +32,35 @@ step 모듈:
 - `steps/step4_ui_and_export`: UI 및 문서 출력
 - `steps/step5_integration_and_demo`: 통합 검증, 리허설, 데모 패키지
 
-## API 엔드포인트 (예정 중심)
+## API 엔드포인트
 
-현재는 API 서버가 아직 구현되지 않았고, 아래는 목표 엔드포인트입니다.
-
-Base URL(예정): `http://localhost:8000/api/v1`
+Base URL: `http://localhost:8000/api/v1`
 
 | Method | Endpoint | 상태 | 설명 |
 | --- | --- | --- | --- |
-| POST | `/rfp/analyze` | 부분 구현 | RFP 업로드 및 요구사항 구조화 (현재는 CLI 스크립트) |
-| POST | `/proposals/search` | 예정 | 유사 제안서 섹션 검색 |
-| POST | `/drafts/generate` | 예정 | 섹션별 제안서 초안 생성 |
-| POST | `/exports/word` | 예정 | Word 파일 출력 |
-| POST | `/exports/ppt` | 예정 | PPT 파일 출력 |
-| GET | `/health` | 예정 | 서비스 헬스체크 |
+| POST | `/rfp/analyze` | 구현 | RFP 텍스트/파일경로 입력 → 구조화 요구사항 JSON |
+| POST | `/proposals/index/rebuild` | 구현 | Step1 청크 기반 Chroma 임베딩 인덱스 재생성 |
+| POST | `/proposals/search` | 구현 | 임베딩 유사도 기반 유사 제안서 청크 검색 |
+| POST | `/drafts/generate` | 구현 | RFP + 검색 컨텍스트 기반 섹션별 제안서 초안 생성 (Ollama 또는 OpenAI 호환 LLM) |
+| POST | `/exports/word` | 구현 | 섹션 초안 → Word(.docx) 파일 내보내기 |
+| POST | `/exports/ppt` | 구현 | 섹션 초안 → PowerPoint(.pptx) 파일 내보내기 (표지·목차·섹션 자동 구성) |
+| GET | `/health` | 구현 | 서비스 헬스체크 (인덱스 상태 포함) |
 
-참고:
-- `steps/step2_retrieval_and_rfp_parse/parser.py` (CLI 기반 RFP 구조화 골격 구현)
-- `steps/step2_retrieval_and_rfp_parse/retrieval_smoke.py` (유사 제안서 검색 스모크 테스트)
+서버 실행:
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+# 최초 실행 또는 step1 데이터 갱신 후: POST /api/v1/proposals/index/rebuild
+# OpenAPI(Swagger) 문서: http://localhost:8000/docs
+```
+
+Streamlit UI 실행 (별도 터미널, API 서버가 켜진 상태에서):
+
+```bash
+streamlit run steps/step4_ui_and_export/app.py
+# UI: http://localhost:8501
+```
 
 ## 지원 파일 포맷
 
@@ -74,12 +85,15 @@ Base URL(예정): `http://localhost:8000/api/v1`
 - 완료
   - step1 스크립트 공개 버전 구성
   - 민감 데이터 로컬 전용 정책 반영
-  - step2 RFP 구조화/유사검색 스모크 테스트 골격 추가
-- 예정
-  - step2 API 서버화
-  - step3 생성 파이프라인
-  - step4 UI/출력
-  - step5 통합 테스트/데모
+  - step2 RFP 파서 품질 강화 (규칙 기반 추출, 스키마 검증 파이프라인)
+  - step2 FastAPI API 골격 구현 (`/rfp/analyze`, `/proposals/search`, `/health`)
+  - step2 임베딩 기반 검색 고도화 (`chromadb` + `sentence-transformers`, `/proposals/index/rebuild`)
+  - step3 `/drafts/generate` API (OpenAI 호환 LLM 어댑터 기반 섹션별 초안 생성, Ollama/OpenAI 지원)
+  - step4 Streamlit UI (RFP 입력 → 분석 → 생성 → 다운로드 흐름)
+  - step4 `/exports/word` Word(.docx) 내보내기 API (마크다운 → Word 스타일 자동 변환)
+  - step4 `/exports/ppt` PowerPoint 내보내기 API (표지·목차·섹션 슬라이드 자동 생성)
+  - step5 데모 런북 및 장애 대응 시나리오 문서화 (`docs/implementation/step5.md`)
+  - step5 E2E 통합 검증 완료 (2026-05-14)
 
 ## 빠른 시작 (Step1, 로컬 전용)
 
@@ -105,9 +119,43 @@ python "steps/step1_data_prep/scripts/chunk_texts.py"
 
 ## 환경변수
 
-- `LOCAL_DATA_ROOT`: 로컬 데이터 루트 경로 (기본값: `<repo>/local_data`)
-- `LOCAL_PROPOSAL_SOURCE_DIR`: 원본 제안서 경로 오버라이드
-- `STEP1_METADATA_CSV`: step1 메타데이터 CSV 경로 오버라이드
+프로젝트 루트에 `.env` 파일을 생성해 설정한다. 템플릿: `.env.example`
+
+### LLM 설정 (초안 생성에 필요)
+
+| 변수명 | 기본값 | 설명 |
+| --- | --- | --- |
+| `LLM_BASE_URL` | `http://localhost:11434/v1` | LLM 엔드포인트 (Ollama 기본) |
+| `LLM_MODEL` | `qwen2.5:0.5b` | 사용 모델명 |
+| `LLM_API_KEY` | `ollama` | API 키 (Ollama는 임의 문자열 가능) |
+
+**Ollama 사전 조건** (`drafts/generate` API 사용 시 필수):
+
+```bash
+# Ollama 설치 후
+ollama serve
+ollama pull qwen2.5:0.5b   # 약 400 MB, 기본 품질
+# ollama pull qwen2.5:3b   # 약 2 GB, 향상된 품질 (RAM 여유 시 권장)
+```
+
+> 메모리 가이드: `0.5b` ≈ 400 MB / `3b` ≈ 2 GB / `7b` ≈ 4.5 GB
+
+**OpenAI 전환 시** `.env` 수정:
+```
+LLM_API_KEY=sk-...
+LLM_BASE_URL=https://api.openai.com/v1
+LLM_MODEL=gpt-4o-mini
+```
+
+### 데이터 경로 설정
+
+| 변수명 | 기본값 | 설명 |
+| --- | --- | --- |
+| `LOCAL_DATA_ROOT` | `<repo>/local_data` | 로컬 데이터 루트 경로 |
+| `CHROMA_INDEX_DIR` | `local_data/step2/chroma_index` | Chroma 인덱스 저장 경로 |
+| `EMBEDDING_MODEL` | `paraphrase-multilingual-MiniLM-L12-v2` | 임베딩 모델명 |
+| `LOCAL_PROPOSAL_SOURCE_DIR` | — | 원본 제안서 경로 오버라이드 |
+| `STEP1_METADATA_CSV` | — | step1 메타데이터 CSV 경로 오버라이드 |
 
 ## 에이전트 규칙 요약
 
