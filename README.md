@@ -72,13 +72,14 @@ streamlit run steps/step4_ui_and_export/app.py
 | 제안서 원본 | PDF | `.pdf` | PyMuPDF 우선, 실패 시 pdfplumber fallback |
 | 메타데이터 | CSV | `.csv` | 선정 파일 목록 기반 복사 |
 
-### Step2 입력 포맷(부분 구현)
+### Step2 입력 포맷(구현됨)
 
 | 용도 | 포맷 | 확장자 | 처리 방식 |
 | --- | --- | --- | --- |
 | RFP 텍스트 | Text | `.txt` | 키워드 기반 구조화 파싱 |
-
-추가 포맷(`.md`, `.docx`)은 추후 필요 시 확장 예정입니다.
+| RFP 텍스트 | Markdown | `.md` | UTF-8 텍스트로 읽어 파싱 |
+| RFP 문서 | Word | `.docx` | `python-docx`로 단락 텍스트 추출 후 파싱 |
+| RFP 문서 | PDF | `.pdf` | PyMuPDF로 페이지 텍스트 추출 후 파싱 |
 
 ## 현재 구현 상태
 
